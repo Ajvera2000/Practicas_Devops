@@ -1,0 +1,44 @@
+name: Python application hello_angel
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12  
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Test with pytest
+      run: |
+        pytest
+    - name: ejecutar la aplicacion
+      run: |
+        python app.py
+    - name: simular el deploy
+      run: |
+        echo "Simulando el despliegue de la aplicación..."
+    - name: construir la imagen de docker
+      run: |
+        docker build -t ghcr.io/Ajvera2000/hello_angel:1.0.0 .
+    - name: login a github container registry
+      run: |
+        echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u Ajvera2000 --password-stdin
+    - name: PUBLICAR LA IMAGEN
+      run: |
+        docker push ghcr.io/Ajvera2000/hello_angel:1.0.0
